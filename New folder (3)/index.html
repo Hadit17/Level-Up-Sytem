@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solo Leveling UI - Productivity App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Level Up System</h1>
+
+  <div id="mainMenu" class="container">
+    <h1>Player Status</h1>
+    <p>Level: <span id="level">1</span> | XP: <span id="xp">0</span>/100 | Gold: <span id="gold">0</span></p>
+    <p>Total Tasks: <span id="totalTasks">0</span> | Quests Completed: <span id="questCompleted">0</span></p>
+
+    <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+
+    <div class="button-container">
+      <button onclick="showSection('productivityApp')">Level Up Quest</button>
+      <button onclick="showSection('playerProfile')">View Profile</button>
+      <button onclick="showSection('shop')">Shop</button>
+      <button onclick="showSection('inventory')">Inventory</button>
+      <button class="reset-button" onclick="resetProgress()">Reset Progress</button>
+    </div>
+  </div>
+
+  <div id="productivityApp" class="container hidden">
+    <h2>Daily Tasks</h2>
+    <input type="text" id="dailyTaskInput" class="styled-input" placeholder="Enter a Daily Task...">
+    <button onclick="addTask('daily')">Add Daily Task</button>
+    <div id="dailyTaskList"></div>
+
+    <h2>Side Quests</h2>
+    <input type="text" id="sideQuestInput" class="styled-input" placeholder="Enter a Side Quest...">
+    <button onclick="addTask('side')">Add Side Quest</button>
+    <div id="sideQuestList"></div>
+
+    <div class="button-container">
+      <button onclick="showSection('mainMenu')">Back</button>
+    </div>
+  </div>
+
+  <div id="playerProfile" class="container hidden">
+    <h2>Player Profile</h2>
+    <p>Name: <span id="playerName">Hadit-San</span></p>
+    <p>Age: <span id="playerAge">N/A</span></p>
+    <p>Weight: <span id="playerWeight">N/A</span></p>
+    <p>Height: <span id="playerHeight">N/A</span></p>
+
+    <input type="text" id="nameInput" class="styled-input" placeholder="Enter Name...">
+    <input type="number" id="ageInput" class="styled-input" placeholder="Enter Age...">
+    <input type="number" id="weightInput" class="styled-input" placeholder="Enter Weight...">
+    <input type="number" id="heightInput" class="styled-input" placeholder="Enter Height...">
+    <div class="button-container">
+      <button onclick="updateProfile()">Update Profile</button>
+      <button onclick="showSection('mainMenu')">Back</button>
+    </div>
+  </div>
+
+  <div id="shop" class="container hidden">
+    <h2>Shop</h2>
+    <p>Gold: <span id="shopGold">0</span></p>
+
+    <h3>Create and Buy Item</h3>
+    <input type="text" id="itemName" class="styled-input" placeholder="Item Name...">
+    <input type="number" id="itemPrice" class="styled-input" placeholder="Item Price...">
+    <button onclick="createAndAddItem()">Add Item to Shop</button>
+
+    <h3>Items in Shop</h3>
+    <div id="shopItemsList"></div>
+
+    <div class="button-container">
+      <button onclick="resetShop()">Reset Shop</button>
+      <button onclick="showSection('mainMenu')">Back</button>
+    </div>
+  </div>
+
+  <div id="inventory" class="container hidden">
+    <h2>Inventory</h2>
+    <ul id="inventoryList"></ul>
+    <div class="button-container">
+      <button onclick="showSection('mainMenu')">Back</button>
+    </div>
+  </div>
+
+  <div id="notificationContainer"></div> <!-- Notification container -->
+
+  <script src="script.js"></script>
+  <script>
+    // Load progress from localStorage
+    window.onload = function() {
+      loadProgress();
+    };
+
+    // Function to load saved progress from localStorage
+    function loadProgress() {
+      if (localStorage.getItem("playerData")) {
+        const playerData = JSON.parse(localStorage.getItem("playerData"));
+        xp = playerData.xp || 0;
+        level = playerData.level || 1;
+        gold = playerData.gold || 0;
+        totalTasks = playerData.totalTasks || 0;
+        questCompleted = playerData.questCompleted || 0;
+        inventory = playerData.inventory || [];
+        shopItems = playerData.shopItems || [];
+
+        // Load profile data
+        playerName = playerData.playerName || "Hadit-San";
+        playerAge = playerData.playerAge || "N/A";
+        playerWeight = playerData.playerWeight || "N/A";
+        playerHeight = playerData.playerHeight || "N/A";
+      }
+
+      // Update UI with loaded data
+      updateUI();
+      updateInventoryList();
+      updateShopItemsList();
+    }
+    
+    // Function to save progress to localStorage
+    function saveProgress() {
+      const playerData = {
+        xp: xp,
+        level: level,
+        gold: gold,
+        totalTasks: totalTasks,
+        questCompleted: questCompleted,
+        inventory: inventory,
+        shopItems: shopItems,
+        playerName: playerName,
+        playerAge: playerAge,
+        playerWeight: playerWeight,
+        playerHeight: playerHeight
+      };
+      localStorage.setItem("playerData", JSON.stringify(playerData));
+    }
+
+    // Update profile with the new values
+    function updateProfile() {
+      let nameInput = document.getElementById('nameInput').value.trim();
+      let ageInput = document.getElementById('ageInput').value.trim();
+      let weightInput = document.getElementById('weightInput').value.trim();
+      let heightInput = document.getElementById('heightInput').value.trim();
+
+      if (nameInput) playerName = nameInput;
+      if (ageInput) playerAge = ageInput;
+      if (weightInput) playerWeight = weightInput;
+      if (heightInput) playerHeight = heightInput;
+
+      document.getElementById('playerName').textContent = playerName;
+      document.getElementById('playerAge').textContent = playerAge;
+      document.getElementById('playerWeight').textContent = playerWeight;
+      document.getElementById('playerHeight').textContent = playerHeight;
+
+      showNotification("Profile updated successfully!");
+      saveProgress(); // Save the progress to localStorage
+    }
+  </script>
+</body>
+</html>
